@@ -1,0 +1,42 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.7'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.wit'
+version = '0.0.1-SNAPSHOT'
+description = 'localpayment'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    /* --- Spring Boot Web --- */
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    /* --- TL3800 시리얼 통신용 jSerialComm --- */
+    implementation("com.fazecast:jSerialComm:2.11.0")
+
+    // Swagger openapi-ui
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
+
+    /* --- Lombok --- */
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    /* --- 테스트 (선택) --- */
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
