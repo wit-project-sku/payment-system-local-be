@@ -1,14 +1,20 @@
-/* 
- * Copyright (c) WIT Global 
+/*
+ * Copyright (c) WIT Global
  */
 package com.wit.localpayment.global.proto;
 
 
-import static com.wit.localpayment.global.proto.Proto.*;
+import static com.wit.localpayment.global.proto.Proto.CATMID_LEN;
+import static com.wit.localpayment.global.proto.Proto.DATETIME_LEN;
+import static com.wit.localpayment.global.proto.Proto.ETX;
+import static com.wit.localpayment.global.proto.Proto.HEADER_BYTES;
+import static com.wit.localpayment.global.proto.Proto.STX;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import lombok.Getter;
 
+@Getter
 public final class TLPacket {
 
   // Header
@@ -86,7 +92,9 @@ public final class TLPacket {
     }
   }
 
-  /** 인스턴스 직렬화(호출자: req.toBytes()). 내부적으로 정규 build를 사용합니다. */
+  /**
+   * 인스턴스 직렬화(호출자: req.toBytes()). 내부적으로 정규 build를 사용합니다.
+   */
   public byte[] toBytes() {
     return build(
         this.catOrMid,
@@ -96,7 +104,9 @@ public final class TLPacket {
         this.data);
   }
 
-  /** 프레임 직렬화(STX~ETX+BCC 포함). ID는 좌정렬로 복사되고 남는 자리는 0x00으로 자연 패딩됩니다. */
+  /**
+   * 프레임 직렬화(STX~ETX+BCC 포함). ID는 좌정렬로 복사되고 남는 자리는 0x00으로 자연 패딩됩니다.
+   */
   public static byte[] build(String id, String dateTime14, int job, int resp, byte[] dataLE) {
     if (dateTime14 == null || dateTime14.length() != 14) {
       throw new IllegalArgumentException("dateTime14 must be 14 chars (YYYYMMDDhhmmss)");
@@ -152,7 +162,9 @@ public final class TLPacket {
     return parseStrict(frame);
   }
 
-  /** 프레임 역직렬화(유효성: STX/ETX/BCC/길이). 헤더의 DataLength(LE) 기준으로 ETX/BCC 위치를 계산하여 엄격하게 검증한다. */
+  /**
+   * 프레임 역직렬화(유효성: STX/ETX/BCC/길이). 헤더의 DataLength(LE) 기준으로 ETX/BCC 위치를 계산하여 엄격하게 검증한다.
+   */
   public static TLPacket parseStrict(byte[] frame) {
     if (frame == null || frame.length < HEADER_BYTES + 2) {
       throw new IllegalArgumentException("short frame: len=" + (frame == null ? -1 : frame.length));
