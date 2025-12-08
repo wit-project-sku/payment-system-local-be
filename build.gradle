@@ -19,24 +19,50 @@ repositories {
 }
 
 dependencies {
-
     /* --- Spring Boot Web --- */
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     /* --- TL3800 시리얼 통신용 jSerialComm --- */
-    implementation("com.fazecast:jSerialComm:2.11.0")
+    implementation 'com.fazecast:jSerialComm:2.11.0'
 
-    // Swagger openapi-ui
+    /* --- Swagger OpenAPI UI --- */
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
 
     /* --- Lombok --- */
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    /* --- 테스트 (선택) --- */
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+/* -----------------------------------------------------------
+ * 개발 중 바로 실행: bootRun 기본 프로필을 local로 고정
+ * ----------------------------------------------------------- */
+tasks.named('bootRun') {
+    systemProperty 'spring.profiles.active', 'local'
+    jvmArgs '-Xms256m', '-Xmx512m'
+}
+
+/* -----------------------------------------------------------
+ * 빌드 산출물(fat-jar)로 실행하는 전용 태스크
+ * ./gradlew runLocal  → bootJar 빌드 후 java -jar 실행
+ * ----------------------------------------------------------- */
+tasks.register('runLocal', Exec) {
+    dependsOn 'bootJar'
+
+    // OS별 java 경로
+    def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+    def javaCmd = isWindows
+            ? "${System.getProperty('java.home')}\\bin\\java.exe"
+            : "${System.getProperty('java.home')}/bin/java"
+
+    // 실행할 JAR 경로
+    def jarFile = tasks.named('bootJar').get().archiveFile.get().asFile.absolutePath
+
+    // SPRING_PROFILES_ACTIVE=local 로 실행
+    environment 'SPRING_PROFILES_ACTIVE', 'local'
+
+    commandLine javaCmd, '-Xms256m', '-Xmx512m', '-jar', jarFile
 }
