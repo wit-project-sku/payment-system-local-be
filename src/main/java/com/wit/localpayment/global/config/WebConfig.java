@@ -14,7 +14,8 @@ public class WebConfig {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:5173", "https://witteria.com", "https://artium.life")
+            .allowedOrigins("http://localhost:5173", "https://witteria.com",
+                "https://unijuni.store")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(false)
